@@ -1,0 +1,6 @@
+venv
+build
+dist
+*.spec
+scores
+members.json
