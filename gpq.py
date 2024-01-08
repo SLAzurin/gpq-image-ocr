@@ -91,7 +91,7 @@ def main():
     with open(
         "gpq_" + datetime.now().strftime("%m-%d-%Y") + ".json", "w", encoding="utf8"
     ) as f:
-        json.dump(memberDict, f, ensure_ascii=False)
+        json.dump(memberDict, f, ensure_ascii=False, indent=4)
 
 if __name__ == "__main__":
     main()
