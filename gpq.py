@@ -95,5 +95,7 @@ def main():
         json.dump(memberDict, f, ensure_ascii=False, indent=4)
 
 if __name__ == "__main__":
+    print("Running...")
     main()
+    print("Done")
     input("Press enter to close this window...")
