@@ -49,22 +49,26 @@ def readImg(pilImage):
 def compNames(names, memberList):
     res = []
     for x in names:
+        if (len(x) < 4):
+            continue
         x = x.translate(str.maketrans("", "", string.punctuation))
-        found = False
-        curr = ""
+        compVal = 0.7
+        currName = ""
         for y in memberList:
-            if SequenceMatcher(None, x, y).ratio() >= 0.7:
-                # print(x, "<->", y, SequenceMatcher(None, x, y).ratio())
-                found = True
-                curr = y
-            elif SequenceMatcher(None, x, y[:10]).ratio() >= 0.7:
-                # print(x, "<->", y[:10], SequenceMatcher(None, x, y[:10]).ratio())
-                found = True
-                curr = y
-        if not found and len(x) >= 4:
-            res.append(x + " @NEWMEMBER")
-        elif found == True:
-            res.append(curr)
+            if len(x) < 10:
+                actual = SequenceMatcher(None, x, y).ratio()
+                if actual > compVal:
+                    compVal = actual
+                    currName = y
+            else:
+                trunc = SequenceMatcher(None, x[:10], y[:10]).ratio()
+                if trunc > compVal:
+                    compVal = trunc
+                    currName = y
+        if compVal > 0.7:
+            res.append(currName)
+        else:
+            res.append(x + "@NEWMEMBER")
     return res
 
 
