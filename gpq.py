@@ -28,9 +28,8 @@ def splitImage(num):
 
 
 def readMembers(fileName):
-    f = open(fileName+'.json', "r")
-    data = json.loads(f.read())
-    f.close()
+    with open(fileName+'.json', "r") as f:
+        data = json.loads(f.read())
     return data
 
 
