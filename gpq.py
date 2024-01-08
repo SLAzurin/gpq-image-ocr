@@ -13,8 +13,8 @@ from datetime import datetime
 if os.name == 'nt':
     pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"
 
-def splitImage(num):
-    im = Image.open("scores/gpq" + str(num + 1) + ".png")
+def splitImage(f):
+    im = Image.open("scores/" + f)
     resized = im.resize((528, 642))
     l1 = 45
     l2 = 364
@@ -82,7 +82,9 @@ def main():
     members = readMembers("members")
     lst = os.listdir(os.getcwd() + "/scores")
     for i in range(len(lst)):
-        files = splitImage(i)
+        if not lst[i].endswith(".png"):
+            continue
+        files = splitImage(lst[i])
         readNameList = readImg(files[0])
         scores = readImg(files[1])
         actualNames = compNames(readNameList, members)
