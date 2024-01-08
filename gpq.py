@@ -51,19 +51,20 @@ def compNames(names, memberList):
     for x in names:
         x = x.translate(str.maketrans("", "", string.punctuation))
         found = False
+        curr = ""
         for y in memberList:
-            if SequenceMatcher(None, x, y).ratio() >= 0.6:
+            if SequenceMatcher(None, x, y).ratio() >= 0.7:
                 # print(x, "<->", y, SequenceMatcher(None, x, y).ratio())
                 found = True
-                res.append(y)
-                break
-            elif SequenceMatcher(None, x, y[:10]).ratio() >= 0.6:
+                curr = y
+            elif SequenceMatcher(None, x, y[:10]).ratio() >= 0.7:
                 # print(x, "<->", y[:10], SequenceMatcher(None, x, y[:10]).ratio())
                 found = True
-                res.append(y)
-                break
+                curr = y
         if not found and len(x) >= 4:
             res.append(x + " @NEWMEMBER")
+        elif found == True:
+            res.append(curr)
     return res
 
 
