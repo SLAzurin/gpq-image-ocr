@@ -7,6 +7,9 @@ from PIL import Image
 from difflib import SequenceMatcher
 from datetime import datetime
 
+# This program was entirely written by my friend qbkl
+# I only added code optimizations
+
 if os.name == 'nt':
     pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"
 
