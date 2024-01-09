@@ -94,13 +94,15 @@ def main():
         scores = readImg(files[1])
         actualNames = compNames(readNameList, members)
         createJson(scores, actualNames, memberDict)
-    with open(
-        "gpq_" + datetime.now().strftime("%m-%d-%Y") + ".json", "w", encoding="utf8"
-    ) as f:
+    fName = "gpq_" + datetime.now().strftime("%m-%d-%Y") + ".json"
+    with open(fName, "w", encoding="utf8") as f:
         json.dump(memberDict, f, ensure_ascii=False, indent=4)
+    return fName
 
 if __name__ == "__main__":
-    print("Running...")
-    main()
+    print("Thank you for using gpq-image-ocr! Made by qbkl (inuwater) and AzurinDayo (iMonoxian).")
+    print("Processing images...")
+    resultsFName = main()
     print("Done")
+    print(f"The results are exported in {resultsFName}")
     input("Press enter to close this window...")
