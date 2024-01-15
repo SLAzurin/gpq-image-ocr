@@ -10,8 +10,11 @@ from datetime import datetime
 # This program was entirely written by my friend qbkl
 # I only added code optimizations
 
-if os.name == 'nt':
-    pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"
+if os.name == "nt":
+    pytesseract.pytesseract.tesseract_cmd = (
+        "C:/Program Files/Tesseract-OCR/tesseract.exe"
+    )
+
 
 def splitImage(f):
     im = Image.open("scores/" + f)
@@ -28,16 +31,26 @@ def splitImage(f):
 
 
 def readMembers(fileName):
-    with open(fileName+'.json', "r", encoding="utf-8") as f:
+    with open(fileName + ".json", "r", encoding="utf8") as f:
         data = json.loads(f.read())
     return data
 
 
-def readImg(pilImage):
+def readImg(pilImage, textType):
+    match textType:
+        case "alnum":
+            cfg = (
+                "-c tessedit_char_whitelist=0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZàáâãäåéêëìíîïóôõöòøùúûüýÿ"
+                + "àáâãäåéêëìíîïóôõöòøùúûüýÿ".upper()
+            )
+        case "nums":
+            cfg = "-c tessedit_char_whitelist=0123456789"
+        case _:
+            cfg = ""
     pilImage.save("tmp.png")
     img = cv2.imread("tmp.png")
     scaled = cv2.resize(img, None, fx=4, fy=4, interpolation=cv2.INTER_CUBIC)
-    res = pytesseract.image_to_string(scaled)
+    res = pytesseract.image_to_string(scaled, config=cfg)
     resList = res.split()
     for i in range(len(resList)):
         resList[i] = resList[i].strip()
@@ -49,7 +62,7 @@ def readImg(pilImage):
 def compNames(names, memberList):
     res = []
     for x in names:
-        if (len(x) < 4):
+        if len(x) < 4:
             continue
         x = x.translate(str.maketrans("", "", string.punctuation))
         compVal = 0.7
@@ -87,11 +100,11 @@ def main():
     members = readMembers("members")
     lst = os.listdir(os.getcwd() + "/scores")
     for i in range(len(lst)):
-        if not lst[i].endswith(".png"):
+        if not lst[i].lower().endswith(".png"):
             continue
         files = splitImage(lst[i])
-        readNameList = readImg(files[0])
-        scores = readImg(files[1])
+        readNameList = readImg(files[0], "alnum")
+        scores = readImg(files[1], "nums")
         actualNames = compNames(readNameList, members)
         createJson(scores, actualNames, memberDict)
     fName = "gpq_" + datetime.now().strftime("%m-%d-%Y") + ".json"
@@ -99,8 +112,11 @@ def main():
         json.dump(memberDict, f, ensure_ascii=False, indent=4)
     return fName
 
+
 if __name__ == "__main__":
-    print("Thank you for using gpq-image-ocr! Made by qbkl (inuwater) and AzurinDayo (iMonoxian).")
+    print(
+        "Thank you for using gpq-image-ocr! Made by qbkl (inuwater) and AzurinDayo (iMonoxian)."
+    )
     print("Processing images...")
     resultsFName = main()
     print("Done")
