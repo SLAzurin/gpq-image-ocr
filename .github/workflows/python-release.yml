@@ -23,10 +23,10 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+    - name: Validate py39 with black
+      run: black --target-version=py39 .\gpq.py
     - name: Build app & zip
       run: |
-        $ErrorActionPreference = "Stop"
-        black --target-version=py39 .\gpq.py
         pyinstaller gpq.py
         cp members.json.example dist/gpq
         mkdir -F "dist/gpq/scores"
