@@ -37,16 +37,15 @@ def readMembers(fileName):
 
 
 def readImg(pilImage, textType):
-    match textType:
-        case "alnum":
-            cfg = (
-                "-c tessedit_char_whitelist=0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZàáâãäåéêëìíîïóôõöòøùúûüýÿ"
-                + "àáâãäåéêëìíîïóôõöòøùúûüýÿ".upper()
-            )
-        case "nums":
-            cfg = "-c tessedit_char_whitelist=0123456789"
-        case _:
-            cfg = ""
+    if textType == "alnum":
+        cfg = (
+            "-c tessedit_char_whitelist=0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZàáâãäåéêëìíîïóôõöòøùúûüýÿ"
+            + "àáâãäåéêëìíîïóôõöòøùúûüýÿ".upper()
+        )
+    elif textType == "nums":
+        cfg = "-c tessedit_char_whitelist=0123456789"
+    else:
+        cfg = ""
     pilImage.save("tmp.png")
     img = cv2.imread("tmp.png")
     scaled = cv2.resize(img, None, fx=4, fy=4, interpolation=cv2.INTER_CUBIC)
