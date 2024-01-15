@@ -49,7 +49,10 @@ def readImg(pilImage, textType):
     pilImage.save("tmp.png")
     img = cv2.imread("tmp.png")
     scaled = cv2.resize(img, None, fx=4, fy=4, interpolation=cv2.INTER_CUBIC)
-    res = pytesseract.image_to_string(scaled, config=cfg)
+    HSV_img = cv2.cvtColor(scaled, cv2.COLOR_BGR2HSV)
+    h, s, v = cv2.split(HSV_img)
+    thresh = cv2.threshold(v, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+    res = pytesseract.image_to_string(thresh, config=f"{cfg} --psm 6 digits")
     resList = res.split()
     for i in range(len(resList)):
         resList[i] = resList[i].strip()
