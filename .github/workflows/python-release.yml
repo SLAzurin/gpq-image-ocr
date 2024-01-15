@@ -27,7 +27,7 @@ jobs:
       run: |
         pyinstaller gpq.py
         cp members.json.example dist/gpq
-        md "dist/gpq/scores"
+        mkdir -F "dist/gpq/scores"
         cd dist
         mv gpq gpq-${{ github.sha }}
         jar -cfM ../gpq-nightly-${{ github.sha }}.zip gpq-${{ github.sha }}
