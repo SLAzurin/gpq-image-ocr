@@ -25,6 +25,7 @@ jobs:
         pip install -r requirements.txt
     - name: Build app & zip
       run: |
+        black --target-version=py39 .\gpq.py
         pyinstaller gpq.py
         cp members.json.example dist/gpq
         mkdir -F "dist/gpq/scores"
