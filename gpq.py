@@ -52,6 +52,7 @@ def readImg(pilImage, textType):
     HSV_img = cv2.cvtColor(scaled, cv2.COLOR_BGR2HSV)
     h, s, v = cv2.split(HSV_img)
     thresh = cv2.threshold(v, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+    # cv2.imwrite(f"tmp{i}{textType}thresh.png", thresh)
     res = pytesseract.image_to_string(thresh, config=f"{cfg} --psm 6 digits")
     resList = res.split()
     for i in range(len(resList)):
@@ -116,9 +117,12 @@ def main():
 
 
 if __name__ == "__main__":
-    print(
-        "Thank you for using gpq-image-ocr! Made by qbkl (inuwater) and AzurinDayo (iMonoxian)."
-    )
+    print("Thank you for using gpq-image-ocr!\n")
+    print("Made by:")
+    print("qbkl (inuwater)")
+    print("AzurinDayo (iMonoxian).\n")
+    print("Other contributors:")
+    print("YellowCello (BlueFlute).\n")
     print("Processing images...")
     resultsFName = main()
     print("Done")
