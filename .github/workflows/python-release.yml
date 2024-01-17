@@ -34,12 +34,14 @@ jobs:
         mv gpq gpq-${{ github.sha }}
         jar -cfM ../gpq-nightly-${{ github.sha }}.zip gpq-${{ github.sha }}
         cd ..
+    - name: Write Release Body
+      run: |
+        git log --oneline --decorate="" "$(git rev-list --tags --max-count=1)..${{ github.sha }}" | Tee-Object RELEASE_BODY
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
         name: Release gpq-image-ocr nightly-${{ github.sha }}
-        body: |
-          Release gpq-image-ocr nightly-${{ github.sha }}
+        body_path: RELEASE_BODY
         draft: false
         tag_name: nightly-${{ github.sha }}
         files: gpq-nightly-${{ github.sha }}.zip
