@@ -35,8 +35,7 @@ jobs:
         jar -cfM ../gpq-nightly-${{ github.sha }}.zip gpq-${{ github.sha }}
         cd ..
     - name: Write Release Body
-      run: |
-        .\release-body.ps1 ${{ github.sha }}
+      run: .\release-body.ps1
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
