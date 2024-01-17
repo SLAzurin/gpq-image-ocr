@@ -5,3 +5,4 @@ dist
 scores/*.png
 members.json
 gpq_*.json
+RELEASE_BODY
