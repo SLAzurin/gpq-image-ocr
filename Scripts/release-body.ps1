@@ -1,1 +1,0 @@
-git log --oneline --decorate="" "$(git rev-list --tags --max-count=1).." | Tee-Object RELEASE_BODY
