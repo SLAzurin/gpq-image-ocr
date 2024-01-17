@@ -32,7 +32,7 @@ jobs:
       run: |
         black --target-version=py312 ./gpq.py
     - name: Write Release Body
-      run: iex "echo ${{ github.event.head_commit.message }} | Tee-Object RELEASE_BODY"
+      run: iex "echo `"${{ github.event.head_commit.message }}`" | Tee-Object RELEASE_BODY"
     - name: Build app & zip
       run: |
         pyinstaller gpq.py
