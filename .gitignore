@@ -6,3 +6,6 @@ scores/*.png
 members.json
 gpq_*.json
 RELEASE_BODY
+node_modules
+dist-electron
+release
