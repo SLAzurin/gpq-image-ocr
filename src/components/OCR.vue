@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { ocr } from "./ocrhelper.vue";
 
 defineProps();
 
@@ -15,9 +16,13 @@ try {
 const statusStr = ref("");
 const statusType = ref<"alert-success" | "alert-error" | "">("");
 const processing = ref(false);
-const imagesF = ref(new Array<string>());
-const processImages = () => {
-  console.log("processing");
+const imagesF = ref<string[]>([]);
+const processImages = async () => {
+  // results.value = await ocr(imagesF.value, members.value);
+  console.log("processing image");
+  console.log(
+    await ocr(imagesF.value[imagesF.value.length - 1], members.value)
+  );
 };
 
 const pasteContent = (e: ClipboardEvent) => {
@@ -46,6 +51,7 @@ const pasteContent = (e: ClipboardEvent) => {
       } catch (e: unknown) {
         statusStr.value = "Failed to update members list";
         statusType.value = "alert-error";
+        console.log(e, v);
       }
     });
   }

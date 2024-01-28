@@ -9,6 +9,6 @@ import "./output.css";
 
 createApp(App)
   .mount("#app")
-  .$nextTick(() => {
-    postMessage({ payload: "removeLoading" }, "*");
-  });
+  // .$nextTick(() => {
+  //   postMessage({ payload: "removeLoading" }, "*");
+  // });

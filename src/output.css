@@ -776,11 +776,6 @@ html {
   justify-content: center;
 }
 
-.link {
-  cursor: pointer;
-  text-decoration-line: underline;
-}
-
 .textarea {
   min-height: 3rem;
   flex-shrink: 1;
@@ -840,16 +835,6 @@ html {
   100% {
     background-position-y: 0;
   }
-}
-
-.link:focus {
-  outline: 2px solid transparent;
-  outline-offset: 2px;
-}
-
-.link:focus-visible {
-  outline: 2px solid currentColor;
-  outline-offset: 2px;
 }
 
 .mockup-phone .display {

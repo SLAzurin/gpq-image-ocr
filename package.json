@@ -20,6 +20,9 @@
       "VITE_DEV_SERVER_URL": "http://127.0.0.1:3344/"
     }
   },
+  "engine": {
+    "npm": "<=1"
+  },
   "type": "module",
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.19.1",

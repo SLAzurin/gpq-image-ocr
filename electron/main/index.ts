@@ -79,6 +79,9 @@ async function createWindow() {
     return { action: "deny" };
   });
   // win.webContents.on('will-navigate', (event, url) => { }) #344
+  ipcMain.on("tesseract", (event, input) => {
+    console.log("tesseract", input);
+  });
 }
 
 app.whenReady().then(createWindow);
@@ -106,18 +109,18 @@ app.on("activate", () => {
 });
 
 // New window example arg: new windows url
-ipcMain.handle("open-win", (_, arg) => {
-  const childWindow = new BrowserWindow({
-    webPreferences: {
-      preload,
-      nodeIntegration: true,
-      contextIsolation: false,
-    },
-  });
+// ipcMain.handle("open-win", (_, arg) => {
+//   const childWindow = new BrowserWindow({
+//     webPreferences: {
+//       preload,
+//       nodeIntegration: true,
+//       contextIsolation: false,
+//     },
+//   });
 
-  if (process.env.VITE_DEV_SERVER_URL) {
-    childWindow.loadURL(`${url}#${arg}`);
-  } else {
-    childWindow.loadFile(indexHtml, { hash: arg });
-  }
-});
+//   if (process.env.VITE_DEV_SERVER_URL) {
+//     childWindow.loadURL(`${url}#${arg}`);
+//   } else {
+//     childWindow.loadFile(indexHtml, { hash: arg });
+//   }
+// });
