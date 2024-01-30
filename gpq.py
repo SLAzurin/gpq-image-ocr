@@ -1,3 +1,4 @@
+from io import BytesIO
 import sys
 from typing import Dict, List, Tuple
 import numpy
@@ -10,6 +11,8 @@ from PIL import Image
 from difflib import SequenceMatcher
 from datetime import datetime
 from enum import Enum
+import click
+import base64
 
 # This program was entirely written by my friend qbkl
 # I only added code optimizations
@@ -25,8 +28,7 @@ class ComparisonTextType(Enum):
     NUMS = 2
 
 
-def splitImage(f: str) -> Tuple[Image.Image, Image.Image]:
-    im = Image.open("scores/" + f)
+def splitImage(im: Image.Image) -> Tuple[Image.Image, Image.Image]:
     resized = im.resize((528, 642))
     l1 = 45
     l2 = 364
@@ -151,7 +153,10 @@ def compNames(
     return res
 
 
-def createJson(gpq: List[str], names: List[str], memberDict: Dict[str, int]):
+def mergeScoresWithNames(
+    gpq: List[str], names: List[str], currentState: Dict[str, int]
+) -> Dict[str, int]:
+    memberDict: Dict[str, int] = currentState
     for i in range(len(gpq)):
         try:
             score = int(gpq[i])
@@ -159,44 +164,71 @@ def createJson(gpq: List[str], names: List[str], memberDict: Dict[str, int]):
                 memberDict[names[i]] = score
         except:
             break
+    return memberDict
 
 
-def main():
+@click.command()
+@click.option("--subprocess", default=False, help="Number of greetings.")
+def main(subprocess):
+    """If this is a subprocess, expect json as stdin: { members: string[]; base64image: string } (without html data header for base64)"""
+    members: List[str] = []
+    images: List[Image.Image] = []
+    if not subprocess:
+        print("Thank you for using gpq-image-ocr!\n")
+        print("Made by:")
+        print("qbkl (inuwater)")
+        print("AzurinDayo (iMonoxian)\n")
+        print("Other contributors:")
+        print("YellowCello (BlueFlute)\n")
+        print("Processing images...")
+        members = readMembers("members")
+        scoresDir = os.listdir(os.getcwd() + "/scores")
+        for i in range(len(scoresDir)):
+            if not scoresDir[i].lower().endswith(".png"):
+                continue
+            images.append(Image.open(os.getcwd() + "/scores/" + scoresDir[i]))
+    else:
+        stdin = ""
+        for line in sys.stdin:
+            stdin += line.rstrip()
+        # print(json.loads(stdin))
+        stdinData = json.loads(stdin)
+        members: List[str] = stdinData["members"]
+        images = [Image.open(BytesIO(base64.b64decode(stdinData["base64image"])))]
+
     memberDict: Dict[str, int] = {}
-    members = readMembers("members")
-    lst = os.listdir(os.getcwd() + "/scores")
-    for i in range(len(lst)):
-        if not lst[i].lower().endswith(".png"):
-            continue
-        files = splitImage(lst[i])
-        readNameList = readImg(files[0], ComparisonTextType.ALUM)
+    for img in images:
+        croppedNamesImage, croppedScoresImage = splitImage(img)
+        img.close()
+        readNameList = readImg(croppedNamesImage, ComparisonTextType.ALUM)
         if type(readNameList) is not dict:
             print(
                 "did not get Dict[int, Dict[str, int]] for readNameList, got ",
                 type(readNameList),
             )
             sys.exit(1)
-        scores = readImg(files[1], ComparisonTextType.NUMS)
+        scores = readImg(croppedScoresImage, ComparisonTextType.NUMS)
         if type(scores) is not list:
             print("did not get List[str] for scores, got ", type(scores))
             sys.exit(1)
         actualNames = compNames(readNameList, members)
-        createJson(scores, actualNames, memberDict)
-    fName = "gpq_" + datetime.now().strftime("%m-%d-%Y") + ".json"
-    with open(fName, "w", encoding="utf8") as f:
-        json.dump(memberDict, f, ensure_ascii=False, indent=4)
-    return fName
+        if len(actualNames) != len(scores):
+            print(
+                f"The number of members({len(actualNames)}) and scores({len(scores)}) don't match"
+            )
+            sys.exit(1)
+        mergeScoresWithNames(scores, actualNames, memberDict)
+
+    if not subprocess:
+        fName = "gpq_" + datetime.now().strftime("%m-%d-%Y") + ".json"
+        with open(fName, "w", encoding="utf8") as f:
+            json.dump(memberDict, f, ensure_ascii=False, indent=4)
+        print("Done")
+        print(f"The results are exported in {fName}")
+        input("Press enter to close this window...")
+    else:
+        print(json.dumps(memberDict))
 
 
 if __name__ == "__main__":
-    print("Thank you for using gpq-image-ocr!\n")
-    print("Made by:")
-    print("qbkl (inuwater)")
-    print("AzurinDayo (iMonoxian)\n")
-    print("Other contributors:")
-    print("YellowCello (BlueFlute)\n")
-    print("Processing images...")
-    resultsFName = main()
-    print("Done")
-    print(f"The results are exported in {resultsFName}")
-    input("Press enter to close this window...")
+    main()
