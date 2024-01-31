@@ -227,7 +227,7 @@ def main(subprocess):
         print(f"The results are exported in {fName}")
         input("Press enter to close this window...")
     else:
-        print(json.dumps(memberDict))
+        print(json.dumps(memberDict, ensure_ascii=False))
 
 
 if __name__ == "__main__":
