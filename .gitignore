@@ -6,4 +6,4 @@ scores/*.png
 members.json
 gpq_*.json
 RELEASE_BODY
-stdin.json
+stdin*.json

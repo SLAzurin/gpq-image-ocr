@@ -28,17 +28,37 @@ class ComparisonTextType(Enum):
     NUMS = 2
 
 
-def splitImage(im: Image.Image) -> Tuple[Image.Image, Image.Image]:
-    resized = im.resize((528, 642))
-    l1 = 45
-    l2 = 364
-    r1 = 120
-    r2 = 420
-    t = 85
-    b = 500
-    im1 = resized.crop((l1, t, r1, b))
-    im2 = resized.crop((l2, t, r2, b))
-    return im1, im2
+class SplitImageType(Enum):
+    LEGACY = 1
+    VIDEO = 2
+
+
+def splitImage(
+    im: Image.Image, type: SplitImageType = SplitImageType.LEGACY
+) -> Tuple[Image.Image, Image.Image]:
+    if type == SplitImageType.LEGACY:
+        resized = im.resize((528, 642))
+        l1 = 45
+        l2 = 364
+        r1 = 120
+        r2 = 420
+        t = 85
+        b = 500
+        im1 = resized.crop((l1, t, r1, b))
+        im2 = resized.crop((l2, t, r2, b))
+        return im1, im2
+    elif type == SplitImageType.VIDEO:
+        resized = im
+        diff = -45
+        l1 = 45 + diff
+        l2 = 364 + diff
+        r1 = 120 + diff
+        r2 = 420 + diff
+        t = 0
+        b = 408
+        im1 = resized.crop((l1, t, r1, b))
+        im2 = resized.crop((l2, t, r2, b))
+        return im1, im2
 
 
 def readMembers(fileName: str) -> List[str]:
@@ -147,6 +167,8 @@ def compNames(
                 occurence = accuracyTable[line][ocrStr]
         if currentResult == "":
             currentResult = currentTry
+        if len(currentResult) < 3:
+            continue
         if isNewMember:
             currentResult += "@NEWMEMBER"
         res.append(currentResult)
@@ -167,10 +189,35 @@ def mergeScoresWithNames(
     return memberDict
 
 
+def videoToImages(path: str) -> List[Image.Image]:
+    cap = cv2.VideoCapture(path)
+    i = 0
+    ret, frame_prev = cap.read()
+    images: List[Image.Image] = [
+        Image.fromarray(cv2.cvtColor(frame_prev, cv2.COLOR_BGR2RGB))
+    ]
+    i = 1
+    while cap.isOpened():
+        ret, frame_cur = cap.read()
+        if ret == False:
+            break
+        diff = cv2.absdiff(frame_prev, frame_cur)
+        mean_diff = diff.mean()
+        if mean_diff > 3:
+            images.append(Image.fromarray(cv2.cvtColor(frame_cur, cv2.COLOR_BGR2RGB)))
+            frame_prev = frame_cur
+        i += 1
+    cap.release()
+    cv2.destroyAllWindows()
+    return images
+
+
 @click.command()
 @click.option("--subprocess", default=False, help="Number of greetings.")
-def main(subprocess):
+@click.option("--video", default="", help="Use video file as input.")
+def main(subprocess, video):
     """If this is a subprocess, expect json as stdin: { members: string[]; base64image: string } (without html data header for base64)"""
+    """If there is a video path, expect json as stdin: { members: string[] }"""
     members: List[str] = []
     images: List[Image.Image] = []
     if not subprocess:
@@ -194,11 +241,22 @@ def main(subprocess):
         # print(json.loads(stdin))
         stdinData = json.loads(stdin)
         members: List[str] = stdinData["members"]
-        images = [Image.open(BytesIO(base64.b64decode(stdinData["base64image"])))]
+        if not video == "":
+            images = videoToImages(video)
+        else:
+            images = [Image.open(BytesIO(base64.b64decode(stdinData["base64image"])))]
 
     memberDict: Dict[str, int] = {}
     for img in images:
-        croppedNamesImage, croppedScoresImage = splitImage(img)
+        if not video == "":
+            croppedNamesImage, croppedScoresImage = splitImage(
+                img, SplitImageType.VIDEO
+            )
+        else:
+            croppedNamesImage, croppedScoresImage = splitImage(
+                img, SplitImageType.LEGACY
+            )
+
         img.close()
         readNameList = readImg(croppedNamesImage, ComparisonTextType.ALUM)
         if type(readNameList) is not dict:
