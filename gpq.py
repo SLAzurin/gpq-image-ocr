@@ -48,8 +48,17 @@ def splitImage(
         im2 = resized.crop((l2, t, r2, b))
         return im1, im2
     elif type == SplitImageType.VIDEO:
-        # TODO: fix here
-        return im, im
+        resized = im
+        diff = -45
+        l1 = 45 + diff
+        l2 = 364 + diff
+        r1 = 120 + diff
+        r2 = 420 + diff
+        t = 0
+        b = 408
+        im1 = resized.crop((l1, t, r1, b))
+        im2 = resized.crop((l2, t, r2, b))
+        return im1, im2
 
 
 def readMembers(fileName: str) -> List[str]:
@@ -158,6 +167,8 @@ def compNames(
                 occurence = accuracyTable[line][ocrStr]
         if currentResult == "":
             currentResult = currentTry
+        if len(currentResult) < 3:
+            continue
         if isNewMember:
             currentResult += "@NEWMEMBER"
         res.append(currentResult)
@@ -179,8 +190,26 @@ def mergeScoresWithNames(
 
 
 def videoToImages(path: str) -> List[Image.Image]:
-    # TODO: fix here
-    return []
+    cap = cv2.VideoCapture(path)
+    i = 0
+    ret, frame_prev = cap.read()
+    images: List[Image.Image] = [
+        Image.fromarray(cv2.cvtColor(frame_prev, cv2.COLOR_BGR2RGB))
+    ]
+    i = 1
+    while cap.isOpened():
+        ret, frame_cur = cap.read()
+        if ret == False:
+            break
+        diff = cv2.absdiff(frame_prev, frame_cur)
+        mean_diff = diff.mean()
+        if mean_diff > 3:
+            images.append(Image.fromarray(cv2.cvtColor(frame_cur, cv2.COLOR_BGR2RGB)))
+            frame_prev = frame_cur
+        i += 1
+    cap.release()
+    cv2.destroyAllWindows()
+    return images
 
 
 @click.command()
