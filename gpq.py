@@ -27,12 +27,15 @@ class ComparisonTextType(Enum):
     ALUM = 1
     NUMS = 2
 
+
 class SplitImageType(Enum):
     LEGACY = 1
     VIDEO = 2
 
 
-def splitImage(im: Image.Image, type: SplitImageType = SplitImageType.LEGACY) -> Tuple[Image.Image, Image.Image]:
+def splitImage(
+    im: Image.Image, type: SplitImageType = SplitImageType.LEGACY
+) -> Tuple[Image.Image, Image.Image]:
     if type == SplitImageType.LEGACY:
         resized = im.resize((528, 642))
         l1 = 45
@@ -174,9 +177,11 @@ def mergeScoresWithNames(
             break
     return memberDict
 
+
 def videoToImages(path: str) -> List[Image.Image]:
     # TODO: fix here
     return []
+
 
 @click.command()
 @click.option("--subprocess", default=False, help="Number of greetings.")
@@ -215,10 +220,14 @@ def main(subprocess, video):
     memberDict: Dict[str, int] = {}
     for img in images:
         if not video == "":
-            croppedNamesImage, croppedScoresImage = splitImage(img, SplitImageType.VIDEO)
+            croppedNamesImage, croppedScoresImage = splitImage(
+                img, SplitImageType.VIDEO
+            )
         else:
-            croppedNamesImage, croppedScoresImage = splitImage(img, SplitImageType.LEGACY)
-        
+            croppedNamesImage, croppedScoresImage = splitImage(
+                img, SplitImageType.LEGACY
+            )
+
         img.close()
         readNameList = readImg(croppedNamesImage, ComparisonTextType.ALUM)
         if type(readNameList) is not dict:
