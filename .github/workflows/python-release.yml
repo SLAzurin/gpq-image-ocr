@@ -25,13 +25,13 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.13"
           cache: pip
       - name: Install dependencies
         run: pip install -r requirements.txt
-      - name: Validate py312 with black
+      - name: Validate py313 with black
         run: |
-          black --target-version=py312 ./gpq.py
+          black --target-version=py313 ./gpq.py
       - name: Build app & zip
         run: |
           pyinstaller gpq.py
