@@ -169,8 +169,6 @@ def compNames(
             currentResult = currentTry
         if len(currentResult) < 3:
             continue
-        if isNewMember:
-            currentResult += "@NEWMEMBER"
         res.append(currentResult)
     return res
 
