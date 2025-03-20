@@ -89,9 +89,9 @@ def readImg(
     # pilImage.save("tmp.png")
     img = cv2.cvtColor(numpy.array(pilImage), cv2.COLOR_RGB2BGR)
 
-    accuracyTable: Dict[
-        int, Dict[str, int]
-    ] = {}  # Dict[resListIndex, Dict[OCRName, occurenceCount]]
+    accuracyTable: Dict[int, Dict[str, int]] = (
+        {}
+    )  # Dict[resListIndex, Dict[OCRName, occurenceCount]]
 
     for iteration in range(startRange, endRange):  # 3,4,5,6 resize
         scaled = cv2.resize(
@@ -169,8 +169,6 @@ def compNames(
             currentResult = currentTry
         if len(currentResult) < 3:
             continue
-        if isNewMember:
-            currentResult += "@NEWMEMBER"
         res.append(currentResult)
     return res
 
