@@ -36,12 +36,7 @@ class SplitImageType(Enum):
 def splitImage(
     im: Image.Image, type: SplitImageType = SplitImageType.LEGACY
 ) -> Tuple[Image.Image, Image.Image]:
-    if type == SplitImageType.LEGACY:
-        resized = im.resize((528, 642))
-    elif type == SplitImageType.VIDEO:
-        resized = im.resize((488, 642))
-    else:
-        resized = im
+    resized = im.resize((528, 642))
     l1 = 45
     l2 = 364
     r1 = 120

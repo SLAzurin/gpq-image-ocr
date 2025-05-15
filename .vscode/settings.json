@@ -2,6 +2,6 @@
     "python.analysis.autoImportCompletions": true,
     "python.analysis.typeCheckingMode": "basic",
     "black-formatter.args": [
-        "--target-version=py39"
+        "--target-version=py313"
     ],
 }
