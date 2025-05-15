@@ -16,26 +16,18 @@
 # ) -> Tuple[Image.Image, Image.Image]:
 #     if type == SplitImageType.LEGACY:
 #         resized = im.resize((528, 642))
-#         l1 = 45
-#         l2 = 364
-#         r1 = 120
-#         r2 = 420
-#         t = 85
-#         b = 500
-#         im1 = resized.crop((l1, t, r1, b))
-#         im2 = resized.crop((l2, t, r2, b))
-#         return im1, im2
 #     elif type == SplitImageType.VIDEO:
+#         resized = im.resize((488, 642))
+#     else:
 #         resized = im
-#         diff = -45
-#         l1 = 45 + diff
-#         l2 = 364 + diff
-#         r1 = 120 + diff
-#         r2 = 420 + diff
-#         t = 0
-#         b = 408
-#         im1 = resized.crop((l1, t, r1, b))
-#         im2 = resized.crop((l2, t, r2, b))
+#     l1 = 45
+#     l2 = 364
+#     r1 = 120
+#     r2 = 420
+#     t = 85
+#     b = 500
+#     im1 = resized.crop((l1, t, r1, b))
+#     im2 = resized.crop((l2, t, r2, b))
 #         # cv2.imwrite(
 #         #     f"frameFromVid1.png", cv2.cvtColor(numpy.array(im1), cv2.COLOR_RGB2BGR)
 #         # )
