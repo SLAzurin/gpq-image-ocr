@@ -60,8 +60,7 @@ def readImg(
     match textType:
         case ComparisonTextType.ALUM:
             cfg = (
-                "-c tessedit_char_whitelist=0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZàáâãäåéêëìíîïóôõöòøùúûüýÿ"
-                + "àáâãäåéêëìíîïóôõöòøùúûüýÿ".upper()
+                "-c tessedit_char_whitelist=0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
             )
             startRange = 3
             endRange = 7

@@ -9,7 +9,7 @@ opencv-python==4.13.0.92
 packaging==26.0
 pathspec==1.0.4
 pefile==2024.8.26
-pillow==12.1.1
+pillow==12.2.0
 platformdirs==4.9.4
 pyinstaller==6.19.0
 pyinstaller-hooks-contrib==2026.3
