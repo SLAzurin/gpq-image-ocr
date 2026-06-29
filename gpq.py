@@ -28,23 +28,23 @@ class ComparisonTextType(Enum):
     NUMS = 2
 
 
-class SplitImageType(Enum):
-    LEGACY = 1
-    VIDEO = 2
+class ImageStyle(Enum):
+    BIG = "big"
+    SMALL = "small"
 
 
 def splitImage(
-    im: Image.Image, type: SplitImageType = SplitImageType.LEGACY
+    im: Image.Image, style: ImageStyle = ImageStyle.BIG
 ) -> Tuple[Image.Image, Image.Image]:
-    resized = im.resize((528, 642))
-    l1 = 45
-    l2 = 364
-    r1 = 120
-    r2 = 420
-    t = 85
-    b = 500
-    im1 = resized.crop((l1, t, r1, b))
-    im2 = resized.crop((l2, t, r2, b))
+    if style == ImageStyle.BIG:
+        # Full GPQ screenshot (~529x640): resize then crop name and score columns
+        resized = im.resize((528, 642))
+        im1 = resized.crop((45, 85, 120, 500))
+        im2 = resized.crop((364, 85, 420, 500))
+    else:
+        # Pre-cropped table image (~447x413): crop name and GPQ score columns directly
+        im1 = im.crop((0, 0, 110, im.height))
+        im2 = im.crop((305, 0, 415, im.height))
     return im1, im2
 
 
@@ -199,9 +199,17 @@ def videoToImages(path: str) -> List[Image.Image]:
 @click.command()
 @click.option("--subprocess", default=False, help="Number of greetings.")
 @click.option("--video", default="", help="Use video file as input.")
-def main(subprocess, video):
+@click.option(
+    "--style",
+    default="big",
+    type=click.Choice(["big", "small"]),
+    show_default=True,
+    help="Image style: 'big' for full GPQ screenshots, 'small' for pre-cropped score table images.",
+)
+def main(subprocess, video, style):
     """If this is a subprocess, expect json as stdin: { members: string[]; base64image: string } (without html data header for base64)"""
     """If there is a video path, expect json as stdin: { members: string[] }"""
+    img_style = ImageStyle.BIG if style == "big" else ImageStyle.SMALL
     members: List[str] = []
     images: List[Image.Image] = []
     if not subprocess:
@@ -222,7 +230,6 @@ def main(subprocess, video):
         stdin = ""
         for line in sys.stdin:
             stdin += line.rstrip()
-        # print(json.loads(stdin))
         stdinData = json.loads(stdin)
         members: List[str] = stdinData["members"]
         if not video == "":
@@ -232,14 +239,9 @@ def main(subprocess, video):
 
     memberDict: Dict[str, int] = {}
     for img in images:
-        if not video == "":
-            croppedNamesImage, croppedScoresImage = splitImage(
-                img, SplitImageType.VIDEO
-            )
-        else:
-            croppedNamesImage, croppedScoresImage = splitImage(
-                img, SplitImageType.LEGACY
-            )
+        croppedNamesImage, croppedScoresImage = splitImage(
+            img, ImageStyle.BIG if video else img_style
+        )
 
         img.close()
         readNameList = readImg(croppedNamesImage, ComparisonTextType.ALUM)
