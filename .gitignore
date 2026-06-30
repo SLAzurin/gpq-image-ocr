@@ -7,3 +7,7 @@ members.json
 gpq_*.json
 RELEASE_BODY
 stdin*.json
+provided
+scores_panda
+scores_isolated
+__pycache__
